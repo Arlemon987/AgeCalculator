@@ -20,7 +20,7 @@
         background:white;
         padding:30px;
         border-radius:12px;
-        width:350px;
+        width:380px;
         box-shadow:0 10px 25px rgba(0,0,0,0.2);
         text-align:center;
     }
@@ -29,10 +29,18 @@
         margin-bottom:20px;
     }
 
+    label{
+        display:block;
+        margin-top:10px;
+        margin-bottom:5px;
+        font-weight:bold;
+        text-align:left;
+    }
+
     input{
         width:100%;
         padding:10px;
-        margin-bottom:15px;
+        margin-bottom:10px;
         font-size:16px;
     }
 
@@ -45,6 +53,7 @@
         border:none;
         border-radius:6px;
         cursor:pointer;
+        margin-top:10px;
     }
 
     button:hover{
@@ -54,6 +63,7 @@
     .result{
         margin-top:20px;
         font-size:16px;
+        text-align:left;
     }
 </style>
 </head>
@@ -63,33 +73,44 @@
 <div class="container">
     <h2>Age Calculator</h2>
 
-    <label><b>Select Date of Birth</b></label>
-    <input type="date" id="dob">
+    <label>Start Date (Date of Birth)</label>
+    <input type="date" id="startDate">
 
-    <button onclick="calculateAge()">Calculate Age</button>
+    <label>End Date (Optional)</label>
+    <input type="date" id="endDate">
+
+    <button onclick="calculateAge()">Calculate</button>
 
     <div class="result" id="result"></div>
 </div>
 
 <script>
 function calculateAge(){
-    const dobInput = document.getElementById("dob").value;
-    if(!dobInput){
-        alert("Please select your date of birth.");
+
+    const startInput = document.getElementById("startDate").value;
+    const endInput = document.getElementById("endDate").value;
+
+    if(!startInput){
+        alert("Please select a start date.");
         return;
     }
 
-    const dob = new Date(dobInput);
-    const today = new Date();
+    const startDate = new Date(startInput);
+    const endDate = endInput ? new Date(endInput) : new Date();
 
-    let years = today.getFullYear() - dob.getFullYear();
-    let months = today.getMonth() - dob.getMonth();
-    let days = today.getDate() - dob.getDate();
+    if(endDate < startDate){
+        alert("End date must be after start date.");
+        return;
+    }
+
+    let years = endDate.getFullYear() - startDate.getFullYear();
+    let months = endDate.getMonth() - startDate.getMonth();
+    let days = endDate.getDate() - startDate.getDate();
 
     if(days < 0){
         months--;
-        const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-        days += lastMonth.getDate();
+        const previousMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0);
+        days += previousMonth.getDate();
     }
 
     if(months < 0){
@@ -97,12 +118,12 @@ function calculateAge(){
         months += 12;
     }
 
-    const diffTime = today - dob;
+    const diffTime = endDate - startDate;
     const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     const totalMonths = years * 12 + months;
 
     document.getElementById("result").innerHTML =
-        "<b>Your Age:</b><br><br>" +
+        "<b>Calculated Age:</b><br><br>" +
         years + " Years " + months + " Months " + days + " Days<br><br>" +
         "Total Months: " + totalMonths + "<br>" +
         "Total Days: " + totalDays;
